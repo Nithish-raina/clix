@@ -13,8 +13,15 @@ const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 export function loadConfig() {
   let fileConfig = {};
 
+  let configExists = false;
+  try {
+    configExists = fs.existsSync(CONFIG_FILE);
+  } catch (err) {
+    logger.warn(`Failed to access config file: ${err.message}.`);
+  }
+
   // Try reading the config file
-  if (fs.existsSync(CONFIG_FILE)) {
+  if (configExists) {
     try {
       const raw = fs.readFileSync(CONFIG_FILE, "utf-8");
       fileConfig = JSON.parse(raw);
@@ -43,6 +50,11 @@ export function loadConfig() {
         `  2. Create ${CONFIG_FILE} with { "apiKey": "your-key" }\n\n` +
         `  Run: mkdir -p ~/.clix && echo '{"provider":"anthropic","apiKey":"your-key"}' > ~/.clix/config.json`,
     );
+  }
+
+  // Saving the config file if it doesn't exist, so future calls would load config from the file instead of again going through env var.
+  if (!configExists) {
+    saveConfig(config);
   }
 
   return config;

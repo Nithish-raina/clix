@@ -1,12 +1,13 @@
+import "dotenv/config";
 export const DEFAULT_CONFIG = {
   // AI provider: 'anthropic' | 'openai' (extensible)
   provider: "anthropic",
 
   // API key — loaded from config file or environment variable
-  apiKey: null,
+  apiKey: process.env.ANTHROPIC_API_KEY || null,
 
   // Model override — null means use the provider's default
-  model: null,
+  model: "claude-haiku-4-5",
 
   // Max tokens for AI responses
   maxTokens: 1024,

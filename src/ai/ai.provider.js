@@ -3,7 +3,7 @@
  * Every concrete provider (Anthropic, OpenAI, Ollama, etc.) must extend this
  * and implement all methods.
  *
- * Business logic depends on THIS interface, never on concrete providers.
+ * Business logic depends on THIS class (for now let's make this as a class, we can introduce interface when this is migrated to TS).
  */
 class AIProvider {
   constructor(config) {
@@ -15,6 +15,7 @@ class AIProvider {
     this.config = config;
   }
 
+  // TODO: Throwing error for all the methods should not be done as it's a violation of Liskov Substitution Principle. We can either make this an interface (not possible in JS, but possible in TS) or use a different pattern to enforce implementation. For now, let's keep it simple and just document that these methods must be implemented by concrete providers.
   /**
    * Provider display name (e.g., "Anthropic Claude", "OpenAI GPT")
    * @returns {string}
