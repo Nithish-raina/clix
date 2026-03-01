@@ -1,9 +1,4 @@
 /**
- * Pre-processes the raw command input before sending to AI.
- * Handles cleanup, validation, and edge cases.
- */
-
-/**
  * Clean and validate the raw command input.
  *
  * @param {string} rawInput - The command string from the user

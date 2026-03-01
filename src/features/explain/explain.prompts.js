@@ -3,6 +3,7 @@
  * The AI provider receives this as the system prompt.
  */
 
+// Prompts generated using AI based on the requirements context provided
 export function buildExplainPrompt(mode = "default") {
   const baseInstructions = `You are a CLI command explainer. Your job is to break down shell commands into clear, understandable parts.
 

@@ -1,9 +1,6 @@
-/**
- * Local danger pattern scanner.
- * Runs BEFORE the AI call — fast, offline, deterministic.
- * Acts as a safety net independent of the AI's analysis.
- */
+// Reg exp Patterns generated using AI
 
+// TODO Both danger patterns and levelPriority numerics should ideally come from a config file or database to make it easier to update without code changes. For now, hardcoding is fine.
 const DANGER_PATTERNS = [
   {
     pattern: /rm\s+(-[a-zA-Z]*f[a-zA-Z]*\s+|.*-rf|.*-fr)/,

@@ -33,11 +33,11 @@ export class ExplainService {
       throw new Error(validation.reason);
     }
 
-    // 2. Parse and clean the input
+    // 2. Parse the input to extract command and operators such as pipes, redirects, and multi-commands. This metadata can be useful for both AI prompting and final output.
     const parsed = parseCommandInput(rawCommand);
 
-    // 3. Run local danger scan (fast, offline)
-    const localDangerScan = scanForDanger(parsed.command);
+    // 3. Run local danger scan before calling AI
+    const localDangerScanResults = scanForDanger(parsed.command);
 
     // 4. Build the AI prompt
     const systemPrompt = buildExplainPrompt(mode);
@@ -50,12 +50,17 @@ export class ExplainService {
     });
 
     // 6. Parse the AI response
-    const explanation = this._parseAIResponse(aiResponse.content);
+    // Verify if openAI, other AI providers returns a response in this format { content: '...', usage: '...'}. If not then this needs to be refatored.
+    const explanation = this.parseAIResponse(aiResponse.content);
 
     // 7. Merge local danger scan with AI analysis
     //    Local scanner is authoritative — if it flags danger, we trust it
     //    even if the AI says it's safe
-    const result = this._mergeResults(explanation, localDangerScan, parsed);
+    const result = this.mergeResults(
+      explanation,
+      localDangerScanResults,
+      parsed,
+    );
 
     // 8. Attach metadata
     result.meta = {
@@ -71,10 +76,11 @@ export class ExplainService {
    * Parse the AI response JSON string into an object.
    * Handles common issues like markdown code fences.
    */
-  _parseAIResponse(content) {
+  parseAIResponse(content) {
     let cleaned = content.trim();
 
     // Strip markdown code fences if the AI wrapped the response
+    // TODO : Should add more strong cleaning logic like removing any markdown syntax. As of now this is fine because we instructed LLM to not provide any markdown syntax in the system prompt.
     if (cleaned.startsWith("```")) {
       cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
@@ -93,7 +99,7 @@ export class ExplainService {
    * Merge the AI explanation with the local danger scan.
    * Local scanner overrides AI danger assessment when it finds something.
    */
-  _mergeResults(explanation, localScan, parsed) {
+  mergeResults(explanation, localScan, parsed) {
     const result = { ...explanation };
 
     // If local scanner found danger that AI missed, upgrade the danger level
@@ -107,18 +113,12 @@ export class ExplainService {
         result.danger_level = localScan.level;
       }
 
-      // Add any local warnings the AI didn't catch
-      const existingWarnings = new Set(result.warnings || []);
+      // Add any local warnings the AI didn't catch, avoiding duplicates.
+      const allWarnings = new Set(result.warnings || []);
       for (const w of localScan.warnings) {
-        if (
-          ![...existingWarnings].some((ew) =>
-            ew.toLowerCase().includes(w.message.toLowerCase().slice(0, 30)),
-          )
-        ) {
-          result.warnings = result.warnings || [];
-          result.warnings.push(w.message);
-        }
+        allWarnings.add(w.message);
       }
+      result.warnings = [...allWarnings];
     }
 
     // Attach parsed metadata
