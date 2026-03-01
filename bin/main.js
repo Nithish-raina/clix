@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { registerExplainCommand } from "../src/commands/explain.command.js";
+import { registerUpdateCommand } from "../src/commands/update.command.js";
 import { createAIProvider } from "../src/ai/ai.factory.js";
 import { loadConfig } from "../src/config/config.manager.js";
 import { logger } from "../src/utils/logger.js";
@@ -25,6 +26,7 @@ async function main() {
     // TODO: maintian a command config registry and loop through it to register commands. For now let's add them manually
     // Pass in any param in options object for the command handler.
     registerExplainCommand(program, { aiProvider, config });
+    registerUpdateCommand(program, { aiProvider, config });
 
     await program.parseAsync(process.argv);
   } catch (error) {
