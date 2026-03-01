@@ -5,19 +5,7 @@
 
 import chalk from "chalk";
 import boxen from "boxen";
-
-// Danger level colors and icons
-const DANGER_STYLES = {
-  safe: { icon: "✅", color: chalk.green, label: "SAFE" },
-  medium: { icon: "⚠️", color: chalk.yellow, label: "CAUTION" },
-  high: { icon: "🚨", color: chalk.red, label: "DANGEROUS" },
-  critical: {
-    icon: "💀",
-    color: chalk.bgRed.white.bold,
-    label: "CRITICAL DANGER",
-  },
-};
-
+import { DANGER_STYLES } from "../../config/constants.js";
 /**
  * Format and print the explanation to the terminal.
  *

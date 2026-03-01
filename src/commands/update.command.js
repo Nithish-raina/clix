@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { saveConfig } from "../config/config.manager.js";
+import { MIN_TOKENS } from "../config/constants.js";
 
 export const registerUpdateCommand = (program, { config }) => {
   program
@@ -80,7 +81,6 @@ function promptForMaxTokens(currentMaxTokens) {
         console.log(chalk.red("Invalid number. No changes made."));
         resolve(null);
       } else {
-        const MIN_TOKENS = 2048;
         if (maxTokens < MIN_TOKENS) {
           console.log(
             chalk.yellow(
