@@ -8,6 +8,7 @@
 import { parseCommandInput, validateCommand } from "./explain.parser.js";
 import { buildExplainPrompt } from "./explain.prompts.js";
 import { scanForDanger } from "../../safety/danger-scanner.js";
+import { logger } from "../../utils/logger.js";
 
 export class ExplainService {
   /**
@@ -79,6 +80,7 @@ export class ExplainService {
    */
   parseAIResponse(content) {
     let cleaned = content.trim();
+    logger.info("Raw AI response:", cleaned); // For debugging parsing issues
 
     // Strip markdown code fences if the AI wrapped the response
     // TODO : Should add more strong cleaning logic like removing any markdown syntax. As of now this is fine because we instructed LLM to not provide any markdown syntax in the system prompt.

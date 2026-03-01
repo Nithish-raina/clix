@@ -10,7 +10,8 @@ export const DEFAULT_CONFIG = {
   model: "claude-haiku-4-5",
 
   // Max tokens for AI responses
-  maxTokens: 1024,
+  // Increased this to 2048, for beginner level explanations which can be more verbose. We can adjust this based on usage and costs.
+  maxTokens: 2048,
 
   // Default explanation mode: 'default' | 'beginner'
   defaultMode: "default",
