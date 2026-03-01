@@ -1,7 +1,7 @@
 // Reg exp Patterns generated using AI
 
 // TODO Both danger patterns and levelPriority numerics should ideally come from a config file or database to make it easier to update without code changes. For now, hardcoding is fine.
-import { DANGER_PATTERNS } from "../config/constants";
+import { DANGER_PATTERNS } from "../config/constants.js";
 
 /**
  * Scan a command string for known dangerous patterns.
