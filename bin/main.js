@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { registerExplainCommand } from "../src/commands/explain.command.js";
-import { registerUpdateCommand } from "../src/commands/update.command.js";
+import {
+  registerExplainCommand,
+  registerUpdateCommand,
+  registerGenerateCommand,
+} from "../src/commands/index.js";
 import { createAIProvider } from "../src/ai/ai.factory.js";
 import { loadConfig } from "../src/config/config.manager.js";
 import { logger } from "../src/utils/logger.js";
@@ -27,6 +30,7 @@ async function main() {
     // Pass in any param in options object for the command handler.
     registerExplainCommand(program, { aiProvider, config });
     registerUpdateCommand(program, { aiProvider, config });
+    registerGenerateCommand(program, { aiProvider, config });
 
     await program.parseAsync(process.argv);
   } catch (error) {
