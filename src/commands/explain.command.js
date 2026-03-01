@@ -88,8 +88,10 @@ Examples:
 
 /**
  * After showing the default explanation, offer to show beginner mode.
- * Only shown in interactive terminals.
+ * Only shown in interactive terminals. (process.stdout.isTTY)
  */
+
+// This was taken using AI
 async function offerBeginnerMode(commandString, service) {
   const prompt =
     chalk.dim("  💡 Press ") +

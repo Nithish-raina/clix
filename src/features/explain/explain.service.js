@@ -28,6 +28,7 @@ export class ExplainService {
    */
   async explain(rawCommand, { mode = "default" } = {}) {
     // 1. Validate input
+    // TODO: The validate command should be moved to a separate validator module and should return more structured errors (e.g., { valid: false, reason: '...' }) instead of throwing. This way we can provide better feedback to the user on how to fix their input.
     const validation = validateCommand(rawCommand);
     if (!validation.valid) {
       throw new Error(validation.reason);

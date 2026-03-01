@@ -61,8 +61,6 @@ export function formatExplainOutput(result, { mode = "default" } = {}) {
   console.log();
 }
 
-// ─── Internal rendering functions ──────────────────────────────────
-
 function printSummary(summary) {
   console.log(chalk.bold("  📋 Summary"));
   console.log(chalk.white(`  ${summary}`));
