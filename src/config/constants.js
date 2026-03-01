@@ -44,12 +44,12 @@ export const DANGER_PATTERNS = [
     message: "This is a 'fork bomb' and will crash your system.",
   },
   {
-    pattern: /^\s*rm\s/,
+    pattern: /(?:^|[\s;|])rm\s/,
     level: "medium",
     message: "The `rm` command permanently deletes files.",
   },
   {
-    pattern: /^\s*sudo\s/,
+    pattern: /(?:^|[\s;|])sudo\s/,
     level: "medium",
     message: "`sudo` executes commands with root privileges.",
   },

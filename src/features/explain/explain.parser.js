@@ -36,18 +36,18 @@ export function parseCommandInput(rawInput) {
  * @returns {{ valid: boolean, reason?: string }}
  */
 export function validateCommand(command) {
-  if (!command || command.length === 0) {
+  if (!command || command.trim().length === 0) {
     return {
       valid: false,
-      reason: 'No command provided. Usage: clix explain "your command here"',
+      reason: "Command cannot be empty.",
     };
   }
 
-  if (command.length > 2000) {
+  if (command.length > 500) {
     return {
       valid: false,
       reason:
-        "Command is too long (max 2000 characters). Try breaking it into smaller parts.",
+        "Command is too long (max 500 characters). Try breaking it into smaller parts.",
     };
   }
 

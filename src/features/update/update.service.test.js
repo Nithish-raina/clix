@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { UpdateService } from "./update.service.js";
+// import { UpdateService } from "./update.service.js"; // Dynamic import at bottom
 import { saveConfig } from "../../config/config.manager.js";
 import { promptForModel, promptForMaxTokens } from "./update.prompts.js";
 
@@ -20,6 +20,9 @@ const {
   promptForModel: mockPromptModel,
   promptForMaxTokens: mockPromptTokens,
 } = await import("./update.prompts.js");
+
+// Import SUT dynamically so mocks apply
+const { UpdateService } = await import("./update.service.js");
 
 describe("UpdateService", () => {
   let updateService;

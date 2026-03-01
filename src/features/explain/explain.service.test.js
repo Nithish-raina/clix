@@ -1,5 +1,4 @@
 import { jest } from "@jest/globals";
-import { ExplainService } from "./explain.service.js";
 
 // --- Mocking Dependencies ---
 // We tell Jest to replace the real files with our fake (mocked) versions.
@@ -16,6 +15,9 @@ jest.unstable_mockModule("../../safety/danger-scanner.js", () => ({
 const { validateCommand, parseCommandInput } =
   await import("./explain.parser.js");
 const { scanForDanger } = await import("../../safety/danger-scanner.js");
+
+// Import the service under test dynamically so mocks apply first.
+const { ExplainService } = await import("./explain.service.js");
 
 // --- Test Suite ---
 describe("ExplainService", () => {
