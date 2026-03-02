@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node bin/main.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose"
   },
   "author": "Nithish-Lakshmanan",
   "license": "ISC",

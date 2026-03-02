@@ -1,3 +1,6 @@
+/** For generating commands based on the user's query, we might need to know some static information about the user's os info and shell info. This is because different commands works in different way in different os.
+ * To start with let's focus on linux, and we can add windows support later.
+ */
 import os from "os";
 
 export function getOsInfo() {

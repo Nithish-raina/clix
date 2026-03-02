@@ -28,6 +28,7 @@ describe("UpdateService", () => {
   let updateService;
   let mockConfig;
   let consoleLogSpy;
+  let exitSpy;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,10 +36,13 @@ describe("UpdateService", () => {
     updateService = new UpdateService({ config: mockConfig });
     // Spy on console.log to avoid cluttering test output
     consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    // Prevent process.exit from terminating the test runner
+    exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {});
   });
 
   afterEach(() => {
     consoleLogSpy.mockRestore();
+    exitSpy.mockRestore();
   });
 
   it("should update model when user selects a new one", async () => {
