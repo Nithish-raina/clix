@@ -4,6 +4,7 @@
 import os from "os";
 import path from "path";
 import fs from "fs";
+import { CACHE_DIR, CACHE_FILE, CACHE_TTL } from "../config/constants.js";
 
 function getOsInfo() {
   const platform = process.platform;
@@ -77,8 +78,42 @@ function collectContext() {
   };
 }
 
+function readCachedContext() {
+  if (!fs.existsSync(CACHE_FILE)) return null;
+  const content = fs.readFileSync(CACHE_FILE, "utf-8");
+  if (!content) return null;
+  try {
+    const parsed = JSON.parse(content);
+    if (Date.now() - parsed.collectedAt < CACHE_TTL) {
+      return parsed;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    // If cache is invalid or corrupted, return null
+    logger.info(`Error reading context cache: ${err.message}`);
+    return null;
+  }
+}
+
+function writeCachedContext(ctx) {
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(ctx, null, 2));
+  } catch (err) {
+    logger.info(`Error writing context cache: ${err.message}`);
+  }
+}
+
 export function getStaticContext() {
+  const cached = readCachedContext();
+  if (cached) return cached;
+
   const context = collectContext();
+  writeCachedContext(context);
+
   return context;
 }
 
