@@ -1,9 +1,8 @@
 # clix
 
-```
- A modern AI-powered CLI companion that explains commands flag-by-flag, generates commands 
- from natural language, and builds your personal command library.
-```
+> An AI-powered CLI companion that explains commands flag-by-flag, generates commands 
+from natural language, and builds your personal command library.
+
 ---
 
 ## CLI Demo Recording
@@ -33,6 +32,39 @@
 
 ```sh
 npm install -g @nithishz/clix
+```
+### Global Install (Recommended)
+
+Install globally to use `clix` from anywhere in your terminal:
+
+```sh
+npm install -g @nithishz/clix
+```
+
+Then run:
+```sh
+clix explain "ls -la"
+```
+
+### Local Install (Inside a Project)
+
+If you prefer to install it locally inside a Node.js project:
+
+```sh
+npm install @nithishz/clix
+```
+
+Then run with:
+```sh
+npx clix explain "ls -la"
+```
+
+### One-Time Usage (No Install)
+
+You can also run it directly without installing:
+
+```sh
+npx @nithishz/clix explain "ls -la"
 ```
 
 ---
