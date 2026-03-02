@@ -1,6 +1,12 @@
 # clix
 
-> AI-powered CLI command explainer and generator
+```
+ A modern AI-powered CLI companion that explains commands flag-by-flag, generates commands 
+ from natural language, and builds your personal command library.
+```
+---
+
+## CLI Demo Recording
 
 ![clix demo](./output/demo.gif)
 
@@ -140,9 +146,9 @@ clix saved --search docker
 clix saved --tags
 clix saved --delete 3
 ```
+--- 
 
----
+## Future Features
 
-## License
-
-ISC
+- Support for multiple AI providers (e.g., OpenAI, Google Gemini)
+- Custom model support (bring your own model / self-hosted LLMs)
