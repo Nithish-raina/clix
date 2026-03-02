@@ -5,6 +5,8 @@ import {
   registerExplainCommand,
   registerUpdateCommand,
   registerGenerateCommand,
+  registerSaveCommand,
+  registerSavedCommand,
 } from "../src/commands/index.js";
 import { createAIProvider } from "../src/ai/ai.factory.js";
 import { loadConfig } from "../src/config/config.manager.js";
@@ -31,6 +33,8 @@ async function main() {
     registerExplainCommand(program, { aiProvider, config });
     registerUpdateCommand(program, { aiProvider, config });
     registerGenerateCommand(program, { aiProvider, config });
+    registerSaveCommand(program, { config });
+    registerSavedCommand(program, { config });
 
     await program.parseAsync(process.argv);
   } catch (error) {
