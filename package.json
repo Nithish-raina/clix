@@ -1,10 +1,30 @@
 {
-  "name": "clix",
+  "name": "@nithishz/clix",
   "version": "1.0.0",
-  "description": "AI-powered CLI command explainer and generator ",
+  "description": "An AI-powered CLI companion that explains commands flag-by-flag, generates commands from natural language, and builds your personal command library.",
   "type": "module",
   "bin": {
     "clix": "./bin/main.js"
+  },
+  "main": "bin/index.js",
+  "files": [
+    "bin",
+    "src"
+  ],
+  "keywords": [
+    "cli",
+    "ai",
+    "shell",
+    "command",
+    "explainer",
+    "anthropic",
+    "claude"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/Nithish-raina/clix"
   },
   "scripts": {
     "start": "node bin/main.js",
