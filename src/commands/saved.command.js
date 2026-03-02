@@ -1,3 +1,12 @@
+import { SavedService } from "../features/saved/saved.service.js";
+import {
+  printSavedCommands,
+  printSavedError,
+  printDeleteConfirmation,
+  printTags,
+} from "../features/saved/saved.formatter.js";
+import { logger } from "../utils/logger.js";
+
 export function registerSavedCommand(program, { config }) {
   program
     .command("saved")
@@ -8,6 +17,46 @@ export function registerSavedCommand(program, { config }) {
     .option("--tags", "Show all tags")
     .action(async (options) => {
       // saved handler with saved service and formatter
-      console.log("Loading saved commands...");
+      try {
+        const savedService = new SavedService();
+
+        // handle --tags flag
+        if (options.tags) {
+          const tags = savedService.tags();
+          printTags(tags);
+          return;
+        }
+
+        // handle --delete flag
+        if (options.delete) {
+          await handleDelete(savedService, options.delete);
+          return;
+        }
+
+        // default: list commands with optional filters
+        const result = savedService.list({
+          tag: options.tag,
+          search: options.search,
+        });
+
+        printSavedCommands(result, {
+          tag: options.tag,
+          search: options.search,
+        });
+      } catch (error) {
+        logger.error("Failed to retrieve saved commands.");
+        process.exit(1);
+      }
     });
+}
+
+async function handleDelete(savedService, id) {
+  const result = savedService.delete(id);
+
+  if (!result.success) {
+    printSavedError(result.error);
+    return;
+  }
+
+  printDeleteConfirmation(result.deleted);
 }
