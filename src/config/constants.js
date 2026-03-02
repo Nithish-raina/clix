@@ -1,4 +1,6 @@
 import chalk from "chalk";
+import os from "os";
+import path from "path";
 
 /**
  * Centralized constants for the application.
@@ -67,3 +69,12 @@ export const DANGER_PATTERNS = [
 
 // Minimum number of tokens for the AI response
 export const MIN_TOKENS = 2048;
+
+// Constants for caching context data
+export const CACHE_DIR = path.join(os.homedir(), ".clix");
+export const CACHE_FILE = path.join(CACHE_DIR, "context_cache.json");
+export const CACHE_TTL = 24 * 1000 * 60 * 60; // 24 hours
+
+// Constants for the save store
+export const STORE_DIR = path.join(os.homedir(), ".clix");
+export const STORE_FILE = path.join(STORE_DIR, "saved-commands.json");

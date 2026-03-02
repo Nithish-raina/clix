@@ -1,4 +1,6 @@
-import { logger } from "../src/utils/logger.js";
+import { formatGenerateOutput } from "../features/generate/generate.formatter.js";
+import { GenerateService } from "../features/generate/generate.service.js";
+import { logger } from "../utils/logger.js";
 
 export function registerGenerateCommand(program, { aiProvider, config }) {
   program
@@ -6,9 +8,14 @@ export function registerGenerateCommand(program, { aiProvider, config }) {
     .description("Generate a CLI command based on the provided description.")
     .action(async (description, options) => {
       try {
-        // delegate to the business layer and return a response to the user
+        const generateService = new GenerateService({ aiProvider });
+        const result = await generateService.generate(description);
+        if (!result) return;
+        formatGenerateOutput(result);
       } catch (error) {
-        logger.error(`Error during command generation: ${error.message}`);
+        // Error already handled in service logging
+        logger.error("Command generation failed. Please try again.");
+        process.exit(1);
       }
     });
 }

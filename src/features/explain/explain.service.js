@@ -80,12 +80,13 @@ export class ExplainService {
    */
   parseAIResponse(content) {
     let cleaned = content.trim();
-    logger.info("Raw AI response:", cleaned); // For debugging parsing issues
+    // logger.info("Raw AI response:", cleaned); // For debugging parsing issues
 
     // Strip markdown code fences if the AI wrapped the response
     // TODO : Should add more strong cleaning logic like removing any markdown syntax. As of now this is fine because we instructed LLM to not provide any markdown syntax in the system prompt.
     if (cleaned.startsWith("```")) {
-      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+      const match = cleaned.match(/^```(?:json)?\n?([\s\S]*?)\n?```/);
+      if (match) cleaned = match[1];
     }
 
     try {
