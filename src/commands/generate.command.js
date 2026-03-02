@@ -2,6 +2,7 @@ import ora from "ora";
 import { logger } from "../utils/logger.js";
 import { formatContextForPrompt, getStaticContext } from "../context/static.js";
 import { buildGeneratePrompt } from "../features/generate/generate.prompts.js";
+import { formatGenerateOutput } from "../features/generate/generate.formatter.js";
 
 export function registerGenerateCommand(program, { aiProvider, config }) {
   program
@@ -28,6 +29,9 @@ export function registerGenerateCommand(program, { aiProvider, config }) {
 
         // Verify if openAI, other AI providers returns a response in this format { content: '...', usage: '...'}. If not then this needs to be refatored.
         const llmResponse = parseAIResponse(aiResponse.content);
+
+        formatGenerateOutput(llmResponse);
+        spinner.stop();
       } catch (error) {
         logger.error(`Error during command generation: ${error.message}`);
         spinner.fail("Command generation failed.");
