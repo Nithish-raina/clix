@@ -74,3 +74,7 @@ export const MIN_TOKENS = 2048;
 export const CACHE_DIR = path.join(os.homedir(), ".clix");
 export const CACHE_FILE = path.join(CACHE_DIR, "context_cache.json");
 export const CACHE_TTL = 24 * 1000 * 60 * 60; // 24 hours
+
+// Constants for the save store
+const STORE_DIR = path.join(os.homedir(), ".clix");
+const STORE_FILE = path.join(STORE_DIR, "saved-commands.json");
