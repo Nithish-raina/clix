@@ -3,7 +3,6 @@
 > An AI-powered CLI companion that explains commands flag-by-flag, generates commands 
 from natural language, and builds your personal command library.
 
----
 
 ## CLI Demo Recording
 
