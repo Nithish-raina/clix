@@ -78,3 +78,7 @@ export const CACHE_TTL = 24 * 1000 * 60 * 60; // 24 hours
 // Constants for the save store
 export const STORE_DIR = path.join(os.homedir(), ".clix");
 export const STORE_FILE = path.join(STORE_DIR, "saved-commands.json");
+
+// Constants for config management
+export const CONFIG_DIR = path.join(os.homedir(), ".clix");
+export const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");

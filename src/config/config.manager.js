@@ -1,11 +1,7 @@
 import fs from "node:fs";
-import path from "node:path";
-import os from "node:os";
 import { DEFAULT_CONFIG, ENV_KEY_MAP } from "./defaults.js";
 import { logger } from "../utils/logger.js";
-
-const CONFIG_DIR = path.join(os.homedir(), ".clix");
-const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
+import { CONFIG_FILE, CONFIG_DIR } from "./constants.js";
 
 /**
  * Load config with Priority: env vars > config file > defaults

@@ -4,10 +4,10 @@ export const DEFAULT_CONFIG = {
   provider: "anthropic",
 
   // API key — loaded from config file or environment variable
-  apiKey: process.env.ANTHROPIC_API_KEY || null,
+  apiKey: process.env.OPENAI_API_KEY || null,
 
   // Model override — null means use the provider's default
-  model: "claude-haiku-4-5",
+  model: "gpt-5.2",
 
   // Max tokens for AI responses
   // Increased this to 2048, for beginner level explanations which can be more verbose. We can adjust this based on usage and costs.
@@ -21,4 +21,5 @@ export const DEFAULT_CONFIG = {
 export const ENV_KEY_MAP = {
   anthropic: "ANTHROPIC_API_KEY",
   openai: "OPENAI_API_KEY",
+  google: "GOOGLE_API_KEY",
 };

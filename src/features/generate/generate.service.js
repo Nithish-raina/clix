@@ -67,7 +67,11 @@ export class GenerateService {
           `Context command: ${result.context_command}\nOutput:\n${outcome.output}`;
 
         spinner.start("Generating command...");
-        result = await this._callAI(description, formattedContext, accumulatedContext);
+        result = await this._callAI(
+          description,
+          formattedContext,
+          accumulatedContext,
+        );
         spinner.stop();
       }
 
@@ -154,19 +158,17 @@ export class GenerateService {
   async _handleMissingTools(missing, spinner) {
     for (const { tool, installSuggestions } of missing) {
       console.log();
-      console.log(
-        chalk.yellow(`  ⚠️  '${tool}' is not installed but is needed.`),
-      );
+      console.log(chalk.yellow(`'${tool}' is not installed but is needed.`));
 
       if (installSuggestions.length === 0) {
         console.log(
-          chalk.dim(`  Please install '${tool}' manually and try again.`),
+          chalk.dim(`Please install '${tool}' manually and try again.`),
         );
         return false;
       }
 
       const installCmd = installSuggestions[0];
-      console.log(chalk.dim(`  Install command: ${chalk.cyan(installCmd)}`));
+      console.log(chalk.dim(`Install command: ${chalk.cyan(installCmd)}`));
 
       const shouldInstall = await confirm({
         message: `Install ${tool}?`,

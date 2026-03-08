@@ -28,7 +28,7 @@ async function main() {
 
     // Register all commands
 
-    // TODO: maintian a command config registry and loop through it to register commands. For now let's add them manually
+    // TODO: maintain a command config registry and loop through it to register commands. For now let's add them manually
     // Pass in any param in options object for the command handler.
     registerExplainCommand(program, { aiProvider, config });
     registerUpdateCommand(program, { aiProvider, config });
