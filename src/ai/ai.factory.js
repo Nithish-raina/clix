@@ -1,4 +1,5 @@
 import AnthropicProvider from "./providers/anthropic.provider.js";
+import OpenAIProvider from "./providers/openai.provider.js";
 
 /**
  * Registry of available AI providers.
@@ -9,9 +10,11 @@ import AnthropicProvider from "./providers/anthropic.provider.js";
  */
 const PROVIDERS = {
   anthropic: AnthropicProvider,
-  // openai: OpenAIProvider,     ← uncomment when ready
+  openai: OpenAIProvider,
   // ollama: OllamaProvider,     ← uncomment when ready
 };
+
+export const AVAILABLE_PROVIDERS = Object.keys(PROVIDERS);
 
 /**
  * Factory function that creates the correct AI provider based on config.

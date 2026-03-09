@@ -4,10 +4,11 @@ export const DEFAULT_CONFIG = {
   provider: "anthropic",
 
   // API key — loaded from config file or environment variable
-  apiKey: process.env.OPENAI_API_KEY || null,
+  apiKey: null,
 
   // Model override — null means use the provider's default
-  model: "gpt-5.2",
+  // Let the provider decide the default model (e.g. claude-sonnet-4-6 or gpt-5.4)
+  model: null,
 
   // Max tokens for AI responses
   // Increased this to 2048, for beginner level explanations which can be more verbose. We can adjust this based on usage and costs.

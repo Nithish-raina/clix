@@ -36,6 +36,11 @@ Examples:
     `,
     )
     .action(async (commandString, options) => {
+      if (!aiProvider) {
+        logger.error("Configuration missing or invalid.");
+        logger.error("Please run `clix init` to set up your AI provider and API Key.");
+        process.exit(1);
+      }
       const mode = options.beginner
         ? "beginner"
         : config.defaultMode || "default";

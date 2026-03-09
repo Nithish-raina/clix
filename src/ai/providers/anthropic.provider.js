@@ -5,7 +5,7 @@ class AnthropicProvider extends AIProvider {
   constructor(config) {
     super(config);
     this.client = new Anthropic({ apiKey: config.apiKey });
-    this.model = config.model || "claude-sonnet-4-20250514";
+    this.model = config.model || "claude-sonnet-4-6";
   }
 
   get name() {

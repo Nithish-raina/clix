@@ -7,6 +7,13 @@ export function registerGenerateCommand(program, { aiProvider, config }) {
     .command("generate <description>")
     .description("Generate a CLI command based on the provided description.")
     .action(async (description, options) => {
+      if (!aiProvider) {
+        logger.error("Configuration missing or invalid.");
+        logger.error(
+          "Please run `clix init` to set up your AI provider and API Key.",
+        );
+        process.exit(1);
+      }
       try {
         const generateService = new GenerateService({ aiProvider });
         const result = await generateService.generate(description);
