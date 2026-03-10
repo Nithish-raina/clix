@@ -1,5 +1,6 @@
 import AnthropicProvider from "./providers/anthropic.provider.js";
 import OpenAIProvider from "./providers/openai.provider.js";
+import GeminiProvider from "./providers/gemini.provider.js";
 
 /**
  * Registry of available AI providers.
@@ -11,6 +12,7 @@ import OpenAIProvider from "./providers/openai.provider.js";
 const PROVIDERS = {
   anthropic: AnthropicProvider,
   openai: OpenAIProvider,
+  gemini: GeminiProvider,
   // ollama: OllamaProvider,     ← uncomment when ready
 };
 

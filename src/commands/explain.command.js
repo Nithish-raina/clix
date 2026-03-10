@@ -38,7 +38,9 @@ Examples:
     .action(async (commandString, options) => {
       if (!aiProvider) {
         logger.error("Configuration missing or invalid.");
-        logger.error("Please run `clix init` to set up your AI provider and API Key.");
+        logger.error(
+          "Please run `clix init` to set up your AI provider and API Key.",
+        );
         process.exit(1);
       }
       const mode = options.beginner
@@ -80,7 +82,7 @@ Examples:
           err.message.includes("429")
         ) {
           logger.error(
-            "Rate limited by AI provider. Please wait a moment and try again.",
+            `Rate limited by AI provider. Please wait a moment and try again. ${err.message}`,
           );
         } else {
           logger.error(err.message);

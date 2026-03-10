@@ -12,8 +12,8 @@ class OpenAIProvider extends AIProvider {
     return `OpenAI (${this.model})`;
   }
 
-  async complete({ systemPrompt, userMessage, maxTokens }) {
-    const tokensLimit = maxTokens || this.config.maxTokens || 2048;
+  async complete({ systemPrompt, userMessage }) {
+    const tokensLimit = this.config.maxTokens || 2048;
 
     const response = await this.client.chat.completions.create({
       model: this.model,

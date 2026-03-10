@@ -12,8 +12,8 @@ class AnthropicProvider extends AIProvider {
     return `Anthropic (${this.model})`;
   }
 
-  async complete({ systemPrompt, userMessage, maxTokens }) {
-    const tokensLimit = maxTokens || this.config.maxTokens || 2048;
+  async complete({ systemPrompt, userMessage }) {
+    const tokensLimit = this.config.maxTokens || 2048;
 
     const response = await this.client.messages.create({
       model: this.model,

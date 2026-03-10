@@ -19,6 +19,18 @@ const MODELS = {
     { name: "GPT-5 Mini (Fastest)", value: "gpt-5-mini" },
     { name: "GPT-4o (Legacy)", value: "gpt-4o" },
   ],
+  gemini: [
+    {
+      name: "Gemini 3.1 Pro (New Preview)",
+      value: "gemini-3.1-pro-preview",
+    },
+    {
+      name: "Gemini 3.1 Flash-Lite (Fastest)",
+      value: "gemini-3.1-flash-lite-preview",
+    },
+    { name: "Gemini 2.5 Flash", value: "gemini-2.5-flash" },
+    { name: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },
+  ],
 };
 
 export function registerInitCommand(program) {

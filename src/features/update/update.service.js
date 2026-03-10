@@ -15,12 +15,6 @@ export class UpdateService {
    * Runs the interactive update process.
    */
   async runUpdate() {
-    console.log(
-      chalk.blue("Current config:"),
-      chalk.dim(JSON.stringify(this.config, null, 2)),
-    );
-    console.log();
-
     const newModel = await promptForModel(this.config.model);
     const newMaxTokens = await promptForMaxTokens(this.config.maxTokens);
 
