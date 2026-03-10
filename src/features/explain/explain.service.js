@@ -52,7 +52,7 @@ export class ExplainService {
     });
 
     // 6. Parse the AI response
-    // Verify if openAI, other AI providers returns a response in this format { content: '...', usage: '...'}. If not then this needs to be refatored.
+    // Verify if openAI, other AI providers returns a response in this format { content: '...', usage: '...'}. If not then this needs to be refactored.
     const explanation = this.parseAIResponse(aiResponse.content);
 
     // 7. Merge local danger scan with AI analysis

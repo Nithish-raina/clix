@@ -32,8 +32,7 @@ export function registerSaveCommand(program, { config }) {
 
         printSaveConfirmation(result.entry);
       } catch (error) {
-        logger.error("Failed to save command.");
-        process.exit(1);
+        throw error;
       }
     });
 }

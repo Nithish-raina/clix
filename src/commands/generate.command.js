@@ -7,15 +7,19 @@ export function registerGenerateCommand(program, { aiProvider, config }) {
     .command("generate <description>")
     .description("Generate a CLI command based on the provided description.")
     .action(async (description, options) => {
+      if (!aiProvider) {
+        throw new Error("AI Provider is not initialized. Run `clix init`.");
+      }
+
       try {
         const generateService = new GenerateService({ aiProvider });
         const result = await generateService.generate(description);
+
         if (!result) return;
+
         formatGenerateOutput(result);
       } catch (error) {
-        // Error already handled in service logging
-        logger.error("Command generation failed. Please try again.");
-        process.exit(1);
+        throw error;
       }
     });
 }

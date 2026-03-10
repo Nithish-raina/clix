@@ -1,4 +1,7 @@
 import AnthropicProvider from "./providers/anthropic.provider.js";
+import OpenAIProvider from "./providers/openai.provider.js";
+import GeminiProvider from "./providers/gemini.provider.js";
+import { AIProviderError } from "../errors/clix-error.js";
 
 /**
  * Registry of available AI providers.
@@ -9,9 +12,12 @@ import AnthropicProvider from "./providers/anthropic.provider.js";
  */
 const PROVIDERS = {
   anthropic: AnthropicProvider,
-  // openai: OpenAIProvider,     ← uncomment when ready
+  openai: OpenAIProvider,
+  gemini: GeminiProvider,
   // ollama: OllamaProvider,     ← uncomment when ready
 };
+
+export const AVAILABLE_PROVIDERS = Object.keys(PROVIDERS);
 
 /**
  * Factory function that creates the correct AI provider based on config.
@@ -25,8 +31,9 @@ export function createAIProvider(config) {
 
   if (!ProviderClass) {
     const available = Object.keys(PROVIDERS).join(", ");
-    throw new Error(
+    throw new AIProviderError(
       `Unknown AI provider: "${providerName}". Available providers: ${available}`,
+      "Check your configuration file or run 'clix init' to select a valid provider.",
     );
   }
 
