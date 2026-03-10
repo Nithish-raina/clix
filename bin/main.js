@@ -12,43 +12,58 @@ import {
 import { createAIProvider } from "../src/ai/ai.factory.js";
 import { loadConfig } from "../src/config/config.manager.js";
 import { logger } from "../src/utils/logger.js";
+import { handleGlobalError } from "../src/errors/global-handler.js";
+import { APIKeyMissingError } from "../src/errors/clix-error.js";
 import chalk from "chalk";
 
 // should run to load config and initialize AI provider before any command is executed
 async function main() {
-  const program = new Command();
-
-  program
-    .name("clix")
-    .version("1.0.0")
-    .description("AI-powered CLI command explainer and generator");
-
-  let config = {};
-  let aiProvider = null;
-
   try {
-    config = loadConfig();
-    aiProvider = createAIProvider(config);
-  } catch (err) {
-    // Config missing or invalid. We'll proceed so users can run 'init'.
-    // We only log if it's NOT the "help" command (which the user might be running)
-    // Actually, just let it be silent. The specific commands will check for aiProvider.
+    const program = new Command();
+
+    program
+      .name("clix")
+      .version("1.0.0")
+      .description("AI-powered CLI command explainer and generator");
+
+    let config = {};
+    let aiProvider = null;
+
+    // Register init command first, as it doesn't need config/provider
+    registerInitCommand(program);
+
+    try {
+      config = loadConfig();
+      aiProvider = createAIProvider(config);
+    } catch (err) {
+      // If API Key is missing, we STILL want the CLI to run so users can run `clix init`.
+      // But other commands should fail if run.
+      if (err instanceof APIKeyMissingError) {
+        // We can log a warning or just let specific commands handle the missing provider.
+        // For now, let's leave aiProvider as null.
+      } else {
+        // Other config errors (read/write errors) should probably stop execution or warn.
+        // We'll throw to global handler if it's critical, or just warn?
+        // Let's throw to global handler to show pretty error, unless it's just missing config which 'init' fixes.
+        // Actually, if loadConfig throws, it means we can't proceed with AI commands.
+        // But we want 'init' to work.
+        // So we catch here.
+      }
+    }
+
+    // Register all commands
+    // We pass config & provider. If they are null/empty, the specific command action should check.
+
+    registerExplainCommand(program, { aiProvider, config });
+    registerUpdateCommand(program, { aiProvider, config });
+    registerGenerateCommand(program, { aiProvider, config });
+    registerSaveCommand(program, { config });
+    registerSavedCommand(program, { config });
+
+    await program.parseAsync(process.argv);
+  } catch (error) {
+    handleGlobalError(error);
   }
-
-  // Register all commands
-  registerInitCommand(program);
-
-  // We need to inject this check into the register functions, OR modify the register functions.
-  // Modifying register functions is cleaner. But for now, let's pass `aiProvider` as null.
-  // And update the commands to check `aiProvider`.
-
-  registerExplainCommand(program, { aiProvider, config });
-  registerUpdateCommand(program, { aiProvider, config });
-  registerGenerateCommand(program, { aiProvider, config });
-  registerSaveCommand(program, { config });
-  registerSavedCommand(program, { config });
-
-  await program.parseAsync(process.argv);
 }
 
 main();

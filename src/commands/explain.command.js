@@ -37,15 +37,13 @@ Examples:
     )
     .action(async (commandString, options) => {
       if (!aiProvider) {
-        logger.error("Configuration missing or invalid.");
-        logger.error(
-          "Please run `clix init` to set up your AI provider and API Key.",
-        );
-        process.exit(1);
+        throw new Error("AI Provider is not initialized. Run `clix init`.");
       }
+
       const mode = options.beginner
         ? "beginner"
         : config.defaultMode || "default";
+
       const spinner = ora({
         text:
           mode === "beginner"
@@ -68,27 +66,7 @@ Examples:
         }
       } catch (err) {
         spinner.stop();
-
-        if (
-          err.message.includes("API key") ||
-          err.message.includes("authentication")
-        ) {
-          logger.error("Authentication failed. Check your API key.");
-          logger.info(
-            "Update your key in ~/.clix/config.json or set the environment variable.",
-          );
-        } else if (
-          err.message.includes("rate limit") ||
-          err.message.includes("429")
-        ) {
-          logger.error(
-            `Rate limited by AI provider. Please wait a moment and try again. ${err.message}`,
-          );
-        } else {
-          logger.error(err.message);
-        }
-
-        process.exit(1);
+        throw err;
       }
     });
 }

@@ -1,5 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import AIProvider from "../ai.provider.js";
+import {
+  LLMError,
+  RateLimitError,
+  AIProviderError,
+} from "../../errors/clix-error.js";
 
 /**
  * AIProvider implementation for Google Gemini models.
@@ -30,31 +35,45 @@ class GeminiProvider extends AIProvider {
    */
   async complete({ systemPrompt, userMessage }) {
     // Gemini 1.5+ supports system instructions directly in config.
-    const model = this.client.getGenerativeModel({
-      model: this.model,
-      systemInstruction: systemPrompt,
-    });
+    try {
+      const model = this.client.getGenerativeModel({
+        model: this.model,
+        systemInstruction: systemPrompt,
+      });
 
-    const generationConfig = {
-      maxOutputTokens: this.config.maxTokens || 2048,
-    };
+      const generationConfig = {
+        maxOutputTokens: this.config.maxTokens || 2048,
+      };
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: userMessage }] }],
-      generationConfig,
-    });
+      const result = await model.generateContent({
+        contents: [{ role: "user", parts: [{ text: userMessage }] }],
+        generationConfig,
+      });
 
-    const response = result.response;
-    const content = response.text();
-    const usageMetadata = response.usageMetadata || {};
+      const response = result.response;
+      const content = response.text();
+      const usageMetadata = response.usageMetadata || {};
 
-    return {
-      content,
-      usage: {
-        inputTokens: usageMetadata.promptTokenCount || 0,
-        outputTokens: usageMetadata.candidatesTokenCount || 0,
-      },
-    };
+      return {
+        content,
+        usage: {
+          inputTokens: usageMetadata.promptTokenCount || 0,
+          outputTokens: usageMetadata.candidatesTokenCount || 0,
+        },
+      };
+    } catch (err) {
+      const msg = err.message || "";
+      if (msg.includes("401") || msg.includes("API key")) {
+        throw new AIProviderError(
+          `Gemini Authentication Failed: ${msg}`,
+          "Check your Google API Key.",
+        );
+      }
+      if (msg.includes("429") || msg.includes("quota")) {
+        throw new RateLimitError("Gemini");
+      }
+      throw new LLMError(`Gemini API Error: ${msg}`);
+    }
   }
 
   async validateConnection() {
