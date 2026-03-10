@@ -5,16 +5,21 @@
 
 import fs from "fs";
 import { STORE_DIR, STORE_FILE } from "../config/constants.js";
+import { CacheReadError, CacheWriteError } from "../errors/clix-error.js";
 
 function ensureStoreExists() {
-  if (!fs.existsSync(STORE_DIR)) {
-    fs.mkdirSync(STORE_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(STORE_FILE)) {
-    fs.writeFileSync(
-      STORE_FILE,
-      JSON.stringify({ commands: [], nextId: 1 }, null, 2),
-    );
+  try {
+    if (!fs.existsSync(STORE_DIR)) {
+      fs.mkdirSync(STORE_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(STORE_FILE)) {
+      fs.writeFileSync(
+        STORE_FILE,
+        JSON.stringify({ commands: [], nextId: 1 }, null, 2),
+      );
+    }
+  } catch (err) {
+    throw new CacheWriteError(STORE_FILE, err);
   }
 }
 
@@ -23,17 +28,32 @@ function readStore() {
   try {
     const data = fs.readFileSync(STORE_FILE, "utf-8");
     return JSON.parse(data);
-  } catch {
-    // corrupted file — reset
-    const fresh = { commands: [], nextId: 1 };
-    fs.writeFileSync(STORE_FILE, JSON.stringify(fresh, null, 2));
-    return fresh;
+  } catch (err) {
+    // If it's a JSON parse error, maybe we should warn instead of resetting silently?
+    // For robust handling, let's wrap it in CacheReadError but maybe add a suggestion to reset based on logic.
+    // However, existing logic resets it. Let's keep it but maybe log/throw if it's a permission error.
+    if (err instanceof SyntaxError) {
+      // Corrupted JSON - deciding to reset for now, but could be safer to backup.
+      // For now, let's stick to previous behavior but clearer implementation.
+      try {
+        const fresh = { commands: [], nextId: 1 };
+        fs.writeFileSync(STORE_FILE, JSON.stringify(fresh, null, 2));
+        return fresh;
+      } catch (writeErr) {
+        throw new CacheWriteError(STORE_FILE, writeErr);
+      }
+    }
+    throw new CacheReadError(STORE_FILE, err);
   }
 }
 
 function writeStore(store) {
   ensureStoreExists();
-  fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2));
+  try {
+    fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2));
+  } catch (err) {
+    throw new CacheWriteError(STORE_FILE, err);
+  }
 }
 
 /**

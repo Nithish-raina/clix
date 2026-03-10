@@ -2,6 +2,7 @@ import { select, password } from "@inquirer/prompts";
 import { saveConfig } from "../config/config.manager.js";
 import { AVAILABLE_PROVIDERS } from "../ai/ai.factory.js";
 import { logger } from "../utils/logger.js";
+import { ClixError, WriteConfigFileError } from "../errors/clix-error.js";
 import chalk from "chalk";
 
 const MODELS = {
@@ -79,14 +80,14 @@ export function registerInitCommand(program) {
             "Configuration saved successfully! You can now use Clix.",
           );
         } catch (err) {
-          logger.error(`Failed to save config: ${err.message}`);
+          throw new WriteConfigFileError("config", err);
         }
       } catch (error) {
         if (error.name === "ExitPromptError") {
           logger.warn("\nInitialization cancelled.");
           return;
         }
-        logger.error(`\nFailed to initialize: ${error.message}`);
+        throw error;
       }
     });
 }

@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { saveConfig } from "../../config/config.manager.js";
 import { promptForModel, promptForMaxTokens } from "./update.prompts.js";
+import { WriteConfigFileError } from "../../errors/clix-error.js";
 
 export class UpdateService {
   /**
@@ -15,31 +16,37 @@ export class UpdateService {
    * Runs the interactive update process.
    */
   async runUpdate() {
-    const newModel = await promptForModel(this.config.model);
-    const newMaxTokens = await promptForMaxTokens(this.config.maxTokens);
+    try {
+      const newModel = await promptForModel(this.config.model);
+      const newMaxTokens = await promptForMaxTokens(this.config.maxTokens);
 
-    let updated = false;
-    const newConfig = { ...this.config };
+      let updated = false;
+      const newConfig = { ...this.config };
 
-    if (newModel && newModel !== newConfig.model) {
-      newConfig.model = newModel;
-      updated = true;
-      console.log(chalk.green(`✅ Model updated to: ${newModel}`));
-    }
+      if (newModel && newModel !== newConfig.model) {
+        newConfig.model = newModel;
+        updated = true;
+        console.log(chalk.green(`✅ Model updated to: ${newModel}`));
+      }
 
-    if (newMaxTokens && newMaxTokens !== newConfig.maxTokens) {
-      newConfig.maxTokens = newMaxTokens;
-      updated = true;
-      console.log(chalk.green(`✅ Max tokens updated to: ${newMaxTokens}`));
-    }
+      if (newMaxTokens && newMaxTokens !== newConfig.maxTokens) {
+        newConfig.maxTokens = newMaxTokens;
+        updated = true;
+        console.log(chalk.green(`✅ Max tokens updated to: ${newMaxTokens}`));
+      }
 
-    if (updated) {
-      saveConfig(newConfig);
-      console.log(chalk.bold.green("\nConfiguration saved successfully!"));
-      process.exit(0);
-    } else {
-      console.log(chalk.yellow("\nNo changes were made."));
-      process.exit(0);
+      if (updated) {
+        saveConfig(newConfig);
+        console.log(chalk.bold.green("\nConfiguration saved successfully!"));
+      } else {
+        console.log(chalk.yellow("\nNo changes were made."));
+      }
+    } catch (err) {
+      if (err.name === "ExitPromptError") {
+        console.log(chalk.yellow("\nUpdate cancelled."));
+        return;
+      }
+      throw err;
     }
   }
 }

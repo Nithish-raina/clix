@@ -44,8 +44,7 @@ export function registerSavedCommand(program, { config }) {
           search: options.search,
         });
       } catch (error) {
-        logger.error("Failed to retrieve saved commands.");
-        process.exit(1);
+        throw error;
       }
     });
 }
