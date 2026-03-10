@@ -23,15 +23,15 @@ from natural language, and builds your personal command library.
 ## Prerequisites
 
 - Node.js ≥ 18.0.0
-- An [Anthropic API key](https://console.anthropic.com/)
+- An API key from one of the supported providers:
+  - [Anthropic](https://console.anthropic.com/) (Claude)
+  - [OpenAI](https://platform.openai.com/) (GPT)
+  - [Google](https://aistudio.google.com/apikey) (Gemini)
 
 ---
 
 ## Installation
 
-```sh
-npm install -g @nithishz/clix
-```
 ### Global Install (Recommended)
 
 Install globally to use `clix` from anywhere in your terminal:
@@ -68,28 +68,58 @@ npx @nithishz/clix explain "ls -la"
 
 ---
 
-## Configuration
+## Getting Started
 
-clix needs an Anthropic API key to work. Choose one of these methods:
-
-**Option 1 — Environment variable (recommended for quick start)**
+Run the interactive setup to choose your AI provider, model, and enter your API key:
 
 ```sh
+clix init
+```
+
+This walks you through:
+
+1. **Provider selection** — Anthropic, OpenAI, or Google Gemini
+2. **Model selection** — pick from available models for your chosen provider
+3. **API key** — enter your provider-specific API key
+
+Your configuration is saved to `~/.clix/config.json` and persists across sessions.
+
+### Supported Providers & Models
+
+| Provider | Models | Env Variable |
+|----------|--------|--------------|
+| **Anthropic** | Claude 4.6 Sonnet, Claude 4.6 Opus, Claude Haiku 4.5 | `ANTHROPIC_API_KEY` |
+| **OpenAI** | GPT-5.4, GPT-5.4 Pro, GPT-5 Mini, GPT-4o | `OPENAI_API_KEY` |
+| **Google Gemini** | Gemini 3.1 Pro, Gemini 3.1 Flash-Lite, Gemini 2.5 Flash, Gemini 2.5 Pro | `GOOGLE_API_KEY` |
+
+### Alternative Configuration
+
+You can also configure clix via environment variables instead of `clix init`:
+
+```sh
+# Anthropic
 export ANTHROPIC_API_KEY=your-api-key-here
+
+# OpenAI
+export OPENAI_API_KEY=your-api-key-here
+
+# Google Gemini
+export GOOGLE_API_KEY=your-api-key-here
 ```
-
-**Option 2 — Config file (persists across sessions)**
-
-```sh
-mkdir -p ~/.clix
-echo '{"provider":"anthropic","apiKey":"your-api-key-here"}' > ~/.clix/config.json
-```
-
-The config file is created automatically on first run if the env var is set, so you only need to set the env var once.
 
 ---
 
 ## Commands
+
+### `init` — Set up your AI provider
+
+```sh
+clix init
+```
+
+Interactive setup wizard to configure your preferred AI provider, model, and API key. Run this once after installation, or anytime you want to switch providers.
+
+---
 
 ### `explain` — Understand any shell command
 
@@ -181,5 +211,5 @@ clix saved --delete 3
 
 ## Future Features
 
-- Support for multiple AI providers (e.g., OpenAI, Google Gemini)
 - Custom model support (bring your own model / self-hosted LLMs)
+- Ollama support for local/self-hosted models
