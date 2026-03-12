@@ -1,7 +1,7 @@
 # clix
 
-> An AI-powered CLI companion that explains commands flag-by-flag, generates commands
-> from natural language, and builds your personal command library.
+> An CLI tool that explains commands flag-by-flag, generates commands
+> from natural language using AI, and builds your personal command library.
 
 ## CLI Demo Recording
 
@@ -11,10 +11,10 @@
 
 ## Features
 
-- **Explain** any shell command — flag by flag, with optional beginner mode
+- **Explain** any shell command — flag by flag, with an optional beginner mode. Beginner mode would explain the command in even more simpler terms
 - **Generate** a command from plain English description
-- **Update** your AI model and token settings interactively
-- **Save** commands locally for later reuse, with tags and descriptions
+- **Update** your AI model and token settings with an interactive wizard
+- **Save** commands locally with tags and descriptions. This could be reused in the future
 - **Browse** your saved commands with search and tag filters
 
 ---
@@ -71,13 +71,13 @@ npx @nithishz/clix explain "ls -la"
 
 ## Getting Started
 
-Run the interactive setup to choose your AI provider, model, and enter your API key:
+Run the interactive setup to choose your AI provider, model, and enter your API key (masked):
 
 ```sh
 clix init
 ```
 
-This walks you through:
+This allows you to:
 
 1. **Provider selection** — Anthropic, OpenAI, or Google Gemini
 2. **Model selection** — pick from available models for your chosen provider
@@ -95,7 +95,7 @@ Your configuration is saved to `~/.clix/config.json` and persists across session
 
 ### Alternative Configuration
 
-You can also configure clix via environment variables instead of `clix init`:
+You can also configure API Keys for your model via environment variables instead of `clix init`:
 
 ```sh
 # Anthropic
@@ -112,13 +112,13 @@ export GOOGLE_API_KEY=your-api-key-here
 
 ## Commands
 
-### `init` — Set up your AI provider
+### `init` — Set up your AI provider, model and API Key
 
 ```sh
 clix init
 ```
 
-Interactive setup wizard to configure your preferred AI provider, model, and API key. Run this once after installation, or anytime you want to switch providers.
+Interactive setup wizard to configure your preferred AI provider, model, and API key. Run this once after installation, or anytime you want to switch providers or update model or update API Key.
 
 ---
 
