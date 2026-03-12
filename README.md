@@ -1,8 +1,7 @@
 # clix
 
-> An AI-powered CLI companion that explains commands flag-by-flag, generates commands 
-from natural language, and builds your personal command library.
-
+> An AI-powered CLI companion that explains commands flag-by-flag, generates commands
+> from natural language, and builds your personal command library.
 
 ## CLI Demo Recording
 
@@ -41,6 +40,7 @@ npm install -g @nithishz/clix
 ```
 
 Then run:
+
 ```sh
 clix explain "ls -la"
 ```
@@ -54,6 +54,7 @@ npm install @nithishz/clix
 ```
 
 Then run with:
+
 ```sh
 npx clix explain "ls -la"
 ```
@@ -86,11 +87,11 @@ Your configuration is saved to `~/.clix/config.json` and persists across session
 
 ### Supported Providers & Models
 
-| Provider | Models | Env Variable |
-|----------|--------|--------------|
-| **Anthropic** | Claude 4.6 Sonnet, Claude 4.6 Opus, Claude Haiku 4.5 | `ANTHROPIC_API_KEY` |
-| **OpenAI** | GPT-5.4, GPT-5.4 Pro, GPT-5 Mini, GPT-4o | `OPENAI_API_KEY` |
-| **Google Gemini** | Gemini 3.1 Pro, Gemini 3.1 Flash-Lite, Gemini 2.5 Flash, Gemini 2.5 Pro | `GOOGLE_API_KEY` |
+| Provider          | Models                                                                  | Env Variable        |
+| ----------------- | ----------------------------------------------------------------------- | ------------------- |
+| **Anthropic**     | Claude 4.6 Sonnet, Claude 4.6 Opus, Claude Haiku 4.5                    | `ANTHROPIC_API_KEY` |
+| **OpenAI**        | GPT-5.4, GPT-5.4 Pro, GPT-5 Mini, GPT-4o                                | `OPENAI_API_KEY`    |
+| **Google Gemini** | Gemini 3.1 Pro, Gemini 3.1 Flash-Lite, Gemini 2.5 Flash, Gemini 2.5 Pro | `GOOGLE_API_KEY`    |
 
 ### Alternative Configuration
 
@@ -207,9 +208,9 @@ clix saved --search docker
 clix saved --tags
 clix saved --delete 3
 ```
---- 
+
+---
 
 ## Future Features
 
 - Custom model support (bring your own model / self-hosted LLMs)
-- Ollama support for local/self-hosted models
