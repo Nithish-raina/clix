@@ -9,6 +9,7 @@ import {
 } from "../../context/static.js";
 import { buildGeneratePrompt } from "./generate.prompts.js";
 import { verifyTools } from "../../tools/verifier.js";
+import { executeInSandbox, getSandboxTier } from "../../safety/command-sandbox.js";
 
 export class GenerateService {
   constructor({ aiProvider }) {
@@ -119,12 +120,21 @@ export class GenerateService {
     }
 
     // show the user what command needs to run and why
+    const tier = getSandboxTier();
+    const sandboxLabel =
+      tier === "bwrap"
+        ? chalk.green("bwrap sandbox — read-only, no network, allowlisted paths only")
+        : tier === "unshare"
+          ? chalk.yellow("unshare sandbox — network isolated, user namespaced")
+          : chalk.red("basic sandbox — restricted env only (install bubblewrap for full protection)");
+
     console.log();
     console.log(
       chalk.dim("  To generate an accurate command, clix needs to run:"),
     );
     console.log(`  ${chalk.cyan(result.context_command)}`);
     console.log(chalk.dim(`  Reason: ${result.context_explanation}`));
+    console.log(chalk.dim(`  Sandbox: ${sandboxLabel}`));
     console.log();
 
     const shouldRun = await confirm({
@@ -137,9 +147,9 @@ export class GenerateService {
       return { denied: true };
     }
 
-    // run the context command
-    spinner.start("Gathering context...");
-    const contextOutput = this._runCommand(result.context_command);
+    // run the context command inside sandbox
+    spinner.start("Gathering context (sandboxed)...");
+    const contextOutput = executeInSandbox(result.context_command);
 
     if (!contextOutput.success) {
       spinner.fail("Context command failed");
@@ -181,7 +191,7 @@ export class GenerateService {
       }
 
       spinner.start(`Installing ${tool}...`);
-      const installResult = this._runCommand(installCmd);
+      const installResult = this._runInstallCommand(installCmd);
 
       if (!installResult.success) {
         spinner.fail(`Failed to install ${tool}`);
@@ -215,14 +225,17 @@ export class GenerateService {
   }
 
   /**
-   * Run a shell command and capture its output.
+   * Run an install command directly (NOT sandboxed).
+   * Install commands need write access so they cannot run inside the sandbox.
+   * These are only executed for known, hardcoded install suggestions from verifier.js
+   * (e.g., "sudo apt install ripgrep"), never for AI-generated commands.
    * @private
    */
-  _runCommand(command) {
+  _runInstallCommand(command) {
     try {
       const output = execSync(command, {
         encoding: "utf-8",
-        timeout: 15000,
+        timeout: 60000,
         stdio: ["ignore", "pipe", "pipe"],
       });
       return { success: true, output: output.trim() };
