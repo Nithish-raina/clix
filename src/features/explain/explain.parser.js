@@ -51,5 +51,19 @@ export function validateCommand(command) {
     };
   }
 
+  // Reject null bytes and control characters (except common whitespace)
+  // Null bytes can truncate strings in C-based tools and bypass security checks.
+  // Control characters have no legitimate use in CLI commands and may indicate
+  // an injection attempt (e.g., terminal escape sequence injection).
+  // eslint-disable-next-line no-control-regex
+  const controlCharPattern = /[\x00-\x08\x0E-\x1F\x7F]/;
+  if (controlCharPattern.test(command)) {
+    return {
+      valid: false,
+      reason:
+        "Command contains invalid control characters. Please use only printable characters.",
+    };
+  }
+
   return { valid: true };
 }
