@@ -28,7 +28,7 @@ const ALLOWED_PATHS = [
 ];
 
 // Tier Detection
-
+// This should be moved to cache file cache.json in ~.clix/cache/ in the future, but for now we can just detect on each run since it's fast and we have a timeout.
 let _tier = null;
 
 function detectTier() {
