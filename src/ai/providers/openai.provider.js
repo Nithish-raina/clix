@@ -4,12 +4,16 @@ import {
   LLMError,
   RateLimitError,
   AIProviderError,
+  LLMServiceDownError,
 } from "../../errors/clix-error.js";
 
 class OpenAIProvider extends AIProvider {
   constructor(config) {
     super(config);
-    this.client = new OpenAI({ apiKey: config.apiKey });
+    this.client = new OpenAI({
+      apiKey: config.apiKey,
+      timeout: config.requestTimeoutMs || 10_000,
+    });
     this.model = config.model || "gpt-5.4";
   }
 
@@ -48,9 +52,37 @@ class OpenAIProvider extends AIProvider {
         if (err.status === 429) {
           throw new RateLimitError("OpenAI");
         }
-        throw new LLMError(`OpenAI API Error (${err.status}): ${err.message}`);
+        if (err.status >= 500) {
+          throw new LLMServiceDownError("OpenAI");
+        }
+        throw new LLMError(
+          `OpenAI API Error (${err.status}): ${err.message}`,
+        );
       }
+
+      if (
+        err.code === "ECONNREFUSED" ||
+        err.code === "ENOTFOUND" ||
+        err.code === "ETIMEDOUT" ||
+        err.name === "AbortError"
+      ) {
+        throw new LLMServiceDownError("OpenAI");
+      }
+
       throw new LLMError(`OpenAI Unexpected Error: ${err.message}`);
+    }
+  }
+
+  async validateConnection() {
+    try {
+      await this.complete({
+        systemPrompt: "Respond with exactly: ok",
+        userMessage: "ping",
+        maxTokens: 8,
+      });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: err };
     }
   }
 }

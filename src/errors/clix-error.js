@@ -75,6 +75,16 @@ export class RateLimitError extends ClixError {
   }
 }
 
+export class LLMServiceDownError extends ClixError {
+  constructor(provider) {
+    super(
+      `${provider} is currently unavailable.`,
+      `Please bear with us — the ${provider} service appears to be down. Try again in a few minutes.`,
+      "LLM_SERVICE_DOWN",
+    );
+  }
+}
+
 export class CacheFileMissingError extends ClixError {
   constructor(path) {
     super(

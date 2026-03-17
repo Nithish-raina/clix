@@ -216,7 +216,7 @@ export class GenerateService {
       dynamicContext,
     );
 
-    const aiResponse = await this.aiProvider.complete({
+    const aiResponse = await this.aiProvider.completeWithRetry({
       systemPrompt,
       userMessage,
     });

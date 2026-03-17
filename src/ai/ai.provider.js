@@ -1,3 +1,5 @@
+import { LLMServiceDownError } from "../errors/clix-error.js";
+
 /**
  * Abstract AI Provider contract.
  * Every concrete provider (Anthropic, OpenAI, Ollama, etc.) must extend this
@@ -35,6 +37,24 @@ class AIProvider {
    */
   async complete({ systemPrompt, userMessage, maxTokens }) {
     throw new Error("complete() must be implemented by provider");
+  }
+
+  /**
+   * Wraps complete() with a single retry for transient service-down errors.
+   * Waits 1s before retrying. All other errors are thrown immediately.
+   */
+  async completeWithRetry(params, retries = 1) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        return await this.complete(params);
+      } catch (err) {
+        if (attempt < retries && err instanceof LLMServiceDownError) {
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+          continue;
+        }
+        throw err;
+      }
+    }
   }
 }
 

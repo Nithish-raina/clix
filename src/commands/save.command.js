@@ -1,4 +1,3 @@
-import { logger } from "../utils/logger.js";
 import { SaveService } from "../features/save/save.service.js";
 import {
   printSaveConfirmation,
@@ -15,24 +14,19 @@ export function registerSaveCommand(program, { config }) {
       "Add a description of what the command does",
     )
     .action(async (command, options) => {
-      // save handler with save service and formatter
-      try {
-        const saveService = new SaveService();
+      const saveService = new SaveService();
 
-        const result = saveService.save({
-          command,
-          description: options.description || "",
-          tags: options.tag || [],
-        });
+      const result = saveService.save({
+        command,
+        description: options.description || "",
+        tags: options.tag || [],
+      });
 
-        if (!result.success) {
-          printSaveError(result.error);
-          return;
-        }
-
-        printSaveConfirmation(result.entry);
-      } catch (error) {
-        throw error;
+      if (!result.success) {
+        printSaveError(result.error);
+        return;
       }
+
+      printSaveConfirmation(result.entry);
     });
 }
