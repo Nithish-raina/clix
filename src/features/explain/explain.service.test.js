@@ -33,6 +33,7 @@ describe("ExplainService", () => {
     mockAiProvider = {
       name: "mock-ai",
       complete: jest.fn(), // jest.fn() creates a spy we can track.
+      completeWithRetry: jest.fn(), // wraps complete() with retry logic in real code
     };
 
     // Create a new instance of our service for each test.
@@ -53,7 +54,7 @@ describe("ExplainService", () => {
     validateCommand.mockReturnValue({ valid: true });
     parseCommandInput.mockReturnValue({ command, isPiped: false });
     scanForDanger.mockReturnValue({ hasDanger: false, level: "safe" });
-    mockAiProvider.complete.mockResolvedValue({
+    mockAiProvider.completeWithRetry.mockResolvedValue({
       content: JSON.stringify(fakeAiResponse),
       usage: { inputTokens: 10, outputTokens: 20 },
     });
@@ -68,7 +69,7 @@ describe("ExplainService", () => {
 
     // Also, check if our dependencies were called correctly.
     expect(validateCommand).toHaveBeenCalledWith(command);
-    expect(mockAiProvider.complete).toHaveBeenCalledTimes(1);
+    expect(mockAiProvider.completeWithRetry).toHaveBeenCalledTimes(1);
   });
 
   // --- Test Case 2: A dangerous command ---
@@ -89,7 +90,7 @@ describe("ExplainService", () => {
       level: "critical", // Local scanner says "critical"
       warnings: [{ message: "This can delete your entire system." }],
     });
-    mockAiProvider.complete.mockResolvedValue({
+    mockAiProvider.completeWithRetry.mockResolvedValue({
       content: JSON.stringify(fakeAiResponse),
     });
 
@@ -115,7 +116,7 @@ describe("ExplainService", () => {
     parseCommandInput.mockReturnValue({ command });
     scanForDanger.mockReturnValue({ hasDanger: false });
     // Simulate the AI returning a broken or incomplete response.
-    mockAiProvider.complete.mockResolvedValue({
+    mockAiProvider.completeWithRetry.mockResolvedValue({
       content: "This is not JSON {",
     });
 

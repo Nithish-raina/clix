@@ -5,7 +5,6 @@ import {
   printDeleteConfirmation,
   printTags,
 } from "../features/saved/saved.formatter.js";
-import { logger } from "../utils/logger.js";
 
 export function registerSavedCommand(program, { config }) {
   program
@@ -16,36 +15,31 @@ export function registerSavedCommand(program, { config }) {
     .option("-d, --delete <id>", "Delete a saved command by ID")
     .option("--tags", "Show all tags")
     .action(async (options) => {
-      // saved handler with saved service and formatter
-      try {
-        const savedService = new SavedService();
+      const savedService = new SavedService();
 
-        // handle --tags flag
-        if (options.tags) {
-          const tags = savedService.tags();
-          printTags(tags);
-          return;
-        }
-
-        // handle --delete flag
-        if (options.delete) {
-          await handleDelete(savedService, options.delete);
-          return;
-        }
-
-        // default: list commands with optional filters
-        const result = savedService.list({
-          tag: options.tag,
-          search: options.search,
-        });
-
-        printSavedCommands(result, {
-          tag: options.tag,
-          search: options.search,
-        });
-      } catch (error) {
-        throw error;
+      // handle --tags flag
+      if (options.tags) {
+        const tags = savedService.tags();
+        printTags(tags);
+        return;
       }
+
+      // handle --delete flag
+      if (options.delete) {
+        await handleDelete(savedService, options.delete);
+        return;
+      }
+
+      // default: list commands with optional filters
+      const result = savedService.list({
+        tag: options.tag,
+        search: options.search,
+      });
+
+      printSavedCommands(result, {
+        tag: options.tag,
+        search: options.search,
+      });
     });
 }
 
