@@ -4,6 +4,7 @@ import {
   LLMError,
   RateLimitError,
   AIProviderError,
+  LLMServiceDownError,
 } from "../../errors/clix-error.js";
 
 /**
@@ -19,6 +20,7 @@ class GeminiProvider extends AIProvider {
     super(config);
     this.client = new GoogleGenerativeAI(config.apiKey);
     this.model = config.model || "gemini-2.5-flash";
+    this.requestTimeoutMs = config.requestTimeoutMs || 10_000;
   }
 
   get name() {
@@ -45,10 +47,24 @@ class GeminiProvider extends AIProvider {
         maxOutputTokens: this.config.maxTokens || 2048,
       };
 
-      const result = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: userMessage }] }],
-        generationConfig,
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        this.requestTimeoutMs,
+      );
+
+      let result;
+      try {
+        result = await model.generateContent(
+          {
+            contents: [{ role: "user", parts: [{ text: userMessage }] }],
+            generationConfig,
+          },
+          { signal: controller.signal },
+        );
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       const response = result.response;
       const content = response.text();
@@ -62,15 +78,28 @@ class GeminiProvider extends AIProvider {
         },
       };
     } catch (err) {
+      const status = err.status || err.httpCode;
       const msg = err.message || "";
-      if (msg.includes("401") || msg.includes("API key")) {
+
+      if (status === 401 || msg.includes("API key")) {
         throw new AIProviderError(
           `Gemini Authentication Failed: ${msg}`,
           "Check your Google API Key.",
         );
       }
-      if (msg.includes("429") || msg.includes("quota")) {
+      if (status === 429 || msg.includes("quota")) {
         throw new RateLimitError("Gemini");
+      }
+      if ((status && status >= 500) || msg.includes("503")) {
+        throw new LLMServiceDownError("Gemini");
+      }
+      if (
+        err.code === "ECONNREFUSED" ||
+        err.code === "ENOTFOUND" ||
+        err.code === "ETIMEDOUT" ||
+        err.name === "AbortError"
+      ) {
+        throw new LLMServiceDownError("Gemini");
       }
       throw new LLMError(`Gemini API Error: ${msg}`);
     }
@@ -83,9 +112,9 @@ class GeminiProvider extends AIProvider {
         userMessage: "ping",
         maxTokens: 8,
       });
-      return true;
+      return { ok: true };
     } catch (err) {
-      return false;
+      return { ok: false, error: err };
     }
   }
 }
