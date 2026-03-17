@@ -1,6 +1,14 @@
-import { executeInSandbox, getSandboxTier } from "./command-sandbox.js";
+import {
+  executeInSandbox,
+  getSandboxTier,
+  _resetTierCache,
+} from "./command-sandbox.js";
 
 describe("command-sandbox", () => {
+  beforeEach(() => {
+    _resetTierCache();
+  });
+
   describe("getSandboxTier", () => {
     it("should return a valid tier", () => {
       expect(["bwrap", "unshare", "basic"]).toContain(getSandboxTier());
