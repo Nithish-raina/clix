@@ -5,6 +5,7 @@ import os from "os";
 import path from "path";
 import fs from "fs";
 import { CACHE_DIR, CACHE_FILE, CACHE_TTL } from "../config/constants.js";
+import { logger } from "../utils/logger.js";
 
 function getOsInfo() {
   const platform = process.platform;
@@ -90,8 +91,7 @@ function readCachedContext() {
       return null;
     }
   } catch (err) {
-    // If cache is invalid or corrupted, return null
-    logger.info(`Error reading context cache: ${err.message}`);
+    logger.warn(`Corrupted context cache, will regenerate: ${err.message}`);
     return null;
   }
 }
@@ -103,7 +103,7 @@ function writeCachedContext(ctx) {
     }
     fs.writeFileSync(CACHE_FILE, JSON.stringify(ctx, null, 2));
   } catch (err) {
-    logger.info(`Error writing context cache: ${err.message}`);
+    logger.warn(`Failed to write context cache: ${err.message}`);
   }
 }
 

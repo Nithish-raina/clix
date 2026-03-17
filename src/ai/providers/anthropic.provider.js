@@ -4,12 +4,16 @@ import {
   LLMError,
   RateLimitError,
   AIProviderError,
+  LLMServiceDownError,
 } from "../../errors/clix-error.js";
 
 class AnthropicProvider extends AIProvider {
   constructor(config) {
     super(config);
-    this.client = new Anthropic({ apiKey: config.apiKey });
+    this.client = new Anthropic({
+      apiKey: config.apiKey,
+      timeout: config.requestTimeoutMs || 10_000,
+    });
     this.model = config.model || "claude-sonnet-4-6";
   }
 
@@ -52,10 +56,23 @@ class AnthropicProvider extends AIProvider {
         if (err.status === 429) {
           throw new RateLimitError("Anthropic");
         }
+        if (err.status >= 500) {
+          throw new LLMServiceDownError("Anthropic");
+        }
         throw new LLMError(
           `Anthropic API Error (${err.status}): ${err.message}`,
         );
       }
+
+      if (
+        err.code === "ECONNREFUSED" ||
+        err.code === "ENOTFOUND" ||
+        err.code === "ETIMEDOUT" ||
+        err.name === "AbortError"
+      ) {
+        throw new LLMServiceDownError("Anthropic");
+      }
+
       throw new LLMError(`Anthropic Unexpected Error: ${err.message}`);
     }
   }
@@ -67,9 +84,9 @@ class AnthropicProvider extends AIProvider {
         userMessage: "ping",
         maxTokens: 8,
       });
-      return true;
+      return { ok: true };
     } catch (err) {
-      return false;
+      return { ok: false, error: err };
     }
   }
 }
