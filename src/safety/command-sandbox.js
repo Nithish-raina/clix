@@ -10,10 +10,9 @@
 import { execFileSync, execSync } from "child_process";
 import fs from "fs";
 
-const MAX_OUTPUT_BYTES = 1024 * 1024; // 1MB
+const MAX_OUTPUT_BYTES = 1024 * 1024;
 const DEFAULT_TIMEOUT = 15000;
 
-// Paths that exist inside the bwrap sandbox (everything else doesn't exist)
 const ALLOWED_PATHS = [
   "/usr",
   "/bin",
@@ -27,34 +26,61 @@ const ALLOWED_PATHS = [
   "/etc/ld.so.cache",
 ];
 
-// Tier Detection
-// This should be moved to cache file cache.json in ~.clix/cache/ in the future, but for now we can just detect on each run since it's fast and we have a timeout.
 let _tier = null;
 
 function detectTier() {
   if (_tier) return _tier;
 
+  // try bwrap — actually run a command, not just version check
   try {
-    execFileSync("bwrap", ["--version"], {
-      timeout: 3000,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    execFileSync(
+      "bwrap",
+      [
+        "--ro-bind",
+        "/usr",
+        "/usr",
+        "--symlink",
+        "usr/lib",
+        "/lib",
+        "--symlink",
+        "usr/lib64",
+        "/lib64",
+        "--symlink",
+        "usr/bin",
+        "/bin",
+        "--symlink",
+        "usr/sbin",
+        "/sbin",
+        "--proc",
+        "/proc",
+        "--dev",
+        "/dev",
+        "--",
+        "echo",
+        "ok",
+      ],
+      {
+        timeout: 3000,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
     _tier = "bwrap";
     return _tier;
   } catch {
-    // not available
+    // not available or not permitted
   }
 
+  // try unshare — actually run a namespaced command
   if (process.platform === "linux") {
     try {
-      execFileSync("unshare", ["--help"], {
+      execFileSync("unshare", ["-r", "-n", "--", "echo", "ok"], {
         timeout: 3000,
         stdio: ["ignore", "pipe", "pipe"],
       });
       _tier = "unshare";
       return _tier;
     } catch {
-      // not available
+      // not available or not permitted
     }
   }
 
@@ -66,7 +92,13 @@ export function getSandboxTier() {
   return detectTier();
 }
 
-// Restricted Environment
+/**
+ * Reset the cached sandbox tier.
+ * Exported for testing purposes only.
+ */
+export function _resetTierCache() {
+  _tier = null;
+}
 
 function buildRestrictedEnv() {
   return {
@@ -78,8 +110,6 @@ function buildRestrictedEnv() {
     SHELL: "/bin/sh",
   };
 }
-
-// Execution per tier
 
 function execBwrap(command, timeout) {
   const cwd = process.cwd();
@@ -140,16 +170,6 @@ function execBasic(command, timeout) {
   });
 }
 
-// Public API
-
-/**
- * Execute a command in the best available sandbox.
- *
- * @param {string} command - The command to run
- * @param {object} [options]
- * @param {number} [options.timeout] - Timeout in ms (default 15000)
- * @returns {{ success: boolean, output: string, tier: string }}
- */
 export function executeInSandbox(command, { timeout = DEFAULT_TIMEOUT } = {}) {
   const tier = detectTier();
 
