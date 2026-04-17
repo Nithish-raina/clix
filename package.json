@@ -33,7 +33,7 @@
   "author": "Nithish-Lakshmanan",
   "license": "ISC",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@google/generative-ai": "^0.24.1",
     "@inquirer/prompts": "^8.3.0",
     "boxen": "^8.0.1",
