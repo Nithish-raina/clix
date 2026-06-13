@@ -213,4 +213,4 @@ clix saved --delete 3
 
 ## Future Features
 
-- Custom model support (bring your own model / self-hosted LLMs)
+- Custom model support (bring your own model / self-hosted LLMs).
